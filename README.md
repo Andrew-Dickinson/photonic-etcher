@@ -27,7 +27,7 @@ If you're interested in support for additional formats, [open an issue](https://
 ## Get Started
 Get started by visiting the hosted site at: https://andrew-dickinson.github.io/photonic-etcher
 
-Also available as an offline application for (Windows, MacOS, and Linux) via [neutralino.js](https://neutralino.js.org/).
+Also available as an offline application for [Windows, MacOS, and Linux](https://github.com/Andrew-Dickinson/photonic-etcher/releases) as a [neutralino.js](https://neutralino.js.org/) build.
 
 ## Built With
 - [React](https://reactjs.org/)
