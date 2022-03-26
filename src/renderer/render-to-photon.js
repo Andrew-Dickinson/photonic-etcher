@@ -1,11 +1,11 @@
 const {XMLParser} = require('fast-xml-parser');
-const { SVG } = require('@svgdotjs/svg.js');
+const {SVG} = require('@svgdotjs/svg.js');
 
 const {buildPhotonFile} = require("./build-photon-file");
 const {SVGToImage} = require("./svg_to_png");
 const {CanvasToImage} = require("./canvas_to_img");
 
-async function renderToPhoton(layers, options){
+ export default async function renderToPhoton(layers, options){
     const outputResolution = options.printerSettings.resolution; // px * px
     const xyRes = options.printerSettings.xyRes; // mm
 
@@ -184,5 +184,3 @@ async function renderToPhoton(layers, options){
 
     return output;
 }
-
-module.exports = renderToPhoton;
