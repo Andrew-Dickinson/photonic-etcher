@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/photonic-etcher/static/css/main.ed9efd7d.css",
+    "main.js": "/photonic-etcher/static/js/main.d12ea485.js",
+    "static/media/bootstrap-icons.woff?": "/photonic-etcher/static/media/bootstrap-icons.c1d7432ee75fa194e499.woff",
+    "static/media/bootstrap-icons.woff2?": "/photonic-etcher/static/media/bootstrap-icons.a13b815539b49de48d23.woff2",
+    "index.html": "/photonic-etcher/index.html",
+    "main.ed9efd7d.css.map": "/photonic-etcher/static/css/main.ed9efd7d.css.map",
+    "main.d12ea485.js.map": "/photonic-etcher/static/js/main.d12ea485.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.ed9efd7d.css",
+    "static/js/main.d12ea485.js"
+  ]
+}
