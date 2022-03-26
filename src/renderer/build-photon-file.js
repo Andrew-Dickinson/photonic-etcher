@@ -79,7 +79,7 @@ function writePhotonHeaders(output, pixelSizemm, exposureTime, resolution, previ
 }
 
 
-async function buildPhotonFile(layerData, previewData, exposureTime, printerSettings){
+export async function buildPhotonFile(layerData, previewData, exposureTime, printerSettings){
     const greyScaleImageData = new Uint8Array(layerData.length / 4);
     console.assert(layerData.length / 4 === printerSettings.resolution[0] * printerSettings.resolution[1]);
     for (let i = 0; i < layerData.length / 4; ++i){
@@ -124,6 +124,3 @@ async function buildPhotonFile(layerData, previewData, exposureTime, printerSett
 
     return new Blob([outputBuffer]);
 }
-
-module.exports.buildPhotonFile = buildPhotonFile;
-module.exports.encodeRLE4 = encodeRLE4;

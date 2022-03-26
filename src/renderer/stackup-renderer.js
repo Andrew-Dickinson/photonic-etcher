@@ -3,7 +3,7 @@ import {SVGToImage} from "./svg_to_png";
 const pcbStackup = window.pcbStackup;
 const renderConverter = window.gerberToSvg.render;
 
-async function renderStackup(layers, options){
+export default async function renderStackup(layers, options){
     const stackup = await pcbStackup(layers, options);
     let id_num = 14214;
 
@@ -34,5 +34,3 @@ async function renderStackup(layers, options){
 
     return [combinedIMGs, individualLayerSVGs];
 }
-
-export default renderStackup;
