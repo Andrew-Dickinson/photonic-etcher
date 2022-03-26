@@ -1,0 +1,45 @@
+name: Build & Publish Neuralino Release
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+
+  build:
+    strategy:
+      matrix:
+        node-version: [14.x]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Get the tag version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm install
+      - run: npm run build
+        env:
+          CI: false
+      - name: Build Native Binaries
+        run: |
+          npx @neutralinojs/neu update
+          npx @neutralinojs/neu build --release
+          PACKAGE_VERSION=$(cat package.json \
+            | grep version \
+            | head -1 \
+            | awk -F: '{ print $2 }' \
+            | sed 's/[",]//g')
+          mv dist/photonic-etcher-release.zip dist/photonic-etcher-all-platforms-${{ steps.get_version.outputs.VERSION }}.zip
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: "dist/photonic-etcher-all-platforms-${{ steps.get_version.outputs.VERSION }}.zip"
+          token: ${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}

@@ -2,7 +2,7 @@
   "name": "photonic-etcher",
   "version": "1.0.0",
   "description": "Generate exposure masks for Anycubic printers from PCB Gerbers",
-  "homepage": "https://Andrew-Dickinson.github.io/photonic-etcher",
+  "homepage": ".",
   "bugs": {
     "url": "https://github.com/Andrew-Dickinson/photonic-etcher/issues"
   },

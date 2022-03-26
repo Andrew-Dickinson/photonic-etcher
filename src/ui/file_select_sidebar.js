@@ -96,7 +96,7 @@ function FileSelectSideBar(props){
                     <div className={"rows content"} />
             }
             <div className={"rows footer"}>
-                <a href={"https://github.com/Andrew-Dickinson/photonic-etcher"} className={"btn btn-light"}>
+                <a href={"https://github.com/Andrew-Dickinson/photonic-etcher"} className={"btn btn-light"} target={"_blank"}>
                     <i className="bi-github" role="img" aria-label="GitHub"></i> View on Github
                 </a>
             </div>
