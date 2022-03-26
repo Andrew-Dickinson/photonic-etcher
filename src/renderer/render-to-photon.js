@@ -24,6 +24,7 @@ async function renderToPhoton(layers, options){
     const parser = new XMLParser(xmlOptions);
 
     const output = [];
+    const fileNameCounts = {};
 
     for (const layer of layers) {
         const svgXMLObj = parser.parse(layer.svg);
@@ -31,7 +32,24 @@ async function renderToPhoton(layers, options){
         const board_height_mm = parseFloat(svgXMLObj.svg['@_height'].replace("mm", ""));
         const viewbox = svgXMLObj.svg['@_viewBox'].split(' ');
         const exposureTime = options.exposureTimes[layer.id];
-        const outputFileName = layer.filename + ".pwms";
+        let outputFileName = ""
+
+        if (!fileNameCounts[layer.filename]) {
+            fileNameCounts[layer.filename] = 0
+        }
+
+        if (fileNameCounts[layer.filename] === 0){
+            outputFileName = layer.filename + ".pwms";
+        } else {
+            const duplicate_num = fileNameCounts[layer.filename] + 2;
+            if (layer.filename.includes(".")){
+                outputFileName = layer.filename.replace(".", "_" + duplicate_num + ".") + ".pwms"
+            } else {
+                outputFileName = layer.filename + "_" + duplicate_num + ".pwms";
+            }
+        }
+        fileNameCounts[layer.filename] += 1;
+
 
         ////////////////////////////////// HANDLE FLIP BOOLS //////////////////////////////////////////////////
         const flipHorizontal = layer.side === "top" ? flipTopLayersHorizontal : flipBottomLayersHorizontal;

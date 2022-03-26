@@ -33,6 +33,7 @@ function MainInterface(props) {
     const [fileList, setFileList] = useState([]);
     const [files, setFiles] = useState([]);
     const [checkList, setCheckList] = useState([]);
+    const [rootFileName, setRootFileName] = useState([]);
 
     const [loading, setLoading] = useState(false);
     const [renderError, setRenderError] = useState(null);
@@ -129,7 +130,9 @@ function MainInterface(props) {
             <div className={"container-fluid h-100"}>
                 <div className={"row h-100"}>
                     <FileSelectSideBar onFileListChange={setFileList}
-                                       onCheckListChange={setCheckList}/>
+                                       onCheckListChange={setCheckList}
+                                       onRootFileNameChange={setRootFileName}
+                    />
                     <div className={"col p-0 h-100"}>
                         <StepWizard nav={<Nav/>} className={"box pagefill"}
                                     loading={loading}
@@ -173,6 +176,7 @@ function MainInterface(props) {
                           invertedLayers={invertedList}
                           showDialog={showExportDialog}
                           setShowDialog={setShowExportDialog}
+                          rootFileName={rootFileName}
                           onLayerEnabledChange={(layer_id, enabled) => {
                               setEnabledList((oldLayersEnabled) => {
                                   const newLayersEnabled = [...oldLayersEnabled];

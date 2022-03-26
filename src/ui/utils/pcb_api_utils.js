@@ -1,5 +1,24 @@
 import {SVG as SVGJS} from '@svgdotjs/svg.js';
 import {renderPhoton, renderStackup, downloadFiles as downloadFilesFunc} from "../../renderer/pcbAPI";
+import JSZip from "jszip";
+
+
+export async function convertZIPToFileList(zipFile){
+    const zip_contents = await JSZip.loadAsync(zipFile.arrayBuffer());
+
+    return Promise.all(Object.entries(zip_contents.files).map(async (entry, _) => {
+        const file = entry[1];
+        const filename_parts = file.name.split("/");
+        return {
+            name: filename_parts[filename_parts.length - 1],
+            size: file._data.uncompressedSize,
+            file: file,
+            text: async function () {
+                return await this.file.async("string");
+            }
+        };
+    }));
+}
 
 export async function loadFiles(fileList) {
     let files = Array.from(fileList);
@@ -33,8 +52,8 @@ export async function renderPhotonFiles(layersToExport, export_options) {
     return await renderPhoton(layersToExport, export_options);
 }
 
-export async function downloadFiles(filesToDownload) {
-    return await downloadFilesFunc(filesToDownload);
+export async function downloadFiles(filesToDownload, rootFileName) {
+    return await downloadFilesFunc(filesToDownload, rootFileName);
 }
 
 export function modifyRawSVG(layer, invert, drill, drillLayerSVGs) {

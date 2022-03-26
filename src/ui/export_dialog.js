@@ -1,4 +1,4 @@
-import {Button, Modal, ProgressBar, Table} from "react-bootstrap";
+import {Alert, Button, Modal, ProgressBar, Table} from "react-bootstrap";
 import React, {useEffect, useState} from "react";
 import {titleCase} from "title-case";
 import {addDisplayOrderField, downloadFiles, renderPhotonFiles} from "./utils/pcb_api_utils";
@@ -14,7 +14,7 @@ const printerModels = {
 
 
 function ExportDialog(props){
-    const {showDialog, setShowDialog} = props;
+    const {showDialog, setShowDialog, rootFileName} = props;
     const {layers, enabledLayers, onLayerEnabledChange, invertedLayers} = props;
 
     const [printerModel, setPrinterModel] = useState(Object.entries(printerModels)[0][0]);
@@ -27,6 +27,7 @@ function ExportDialog(props){
 
     const [showPreview, setShowPreview] = useState(false);
     const [previewLoading, setPreviewLoading] = useState(false);
+    const [previewError, setPreviewError] = useState("");
 
     const [photonFiles, setphotonFiles] = useState([]);
     const [outputPath, setOutputPath] = useState("");
@@ -92,7 +93,15 @@ function ExportDialog(props){
             <div className={"container"}>
                 {showPreview ?
                     <div className={"row"}>
-                        {previewLoading ?
+                        {previewError ?
+                                <div className={"container rows content"}>
+                                    <Alert className={"alert-danger m-4"}>
+                                        <h4>Unable to load preview</h4>
+                                        {previewError.toString()}
+                                    </Alert>
+                                </div>
+                            :
+                            previewLoading ?
                             <div className={"d-flex justify-content-center"}>
                                 <div className={"col-lg-7 col-md-12 col-12"}>
                                     <ProgressBar animated now={100}/>
@@ -390,7 +399,7 @@ function ExportDialog(props){
                 <Button variant="primary" disabled={!inputsValid() || previewLoading}
                         onClick={() => {
                             if (showPreview) {
-                                downloadFiles(photonFiles).then(filePath => {
+                                downloadFiles(photonFiles, rootFileName).then(filePath => {
                                     if (filePath) {
                                         setOutputPath(filePath);
                                     }
@@ -415,9 +424,13 @@ function ExportDialog(props){
 
                                 console.log(layersToRender)
 
+                                setPreviewError("");
                                 renderPhotonFiles(layersToRender, options).then(results => {
                                     setphotonFiles(results);
                                     setPreviewLoading(false);
+                                }).catch((err) => {
+                                    setPreviewLoading(false);
+                                    setPreviewError(err);
                                 });
                             }
                         }}>
