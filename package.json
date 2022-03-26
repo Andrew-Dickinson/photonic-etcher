@@ -1,7 +1,18 @@
 {
   "name": "photonic-etcher",
-  "version": "0.1.0",
-  "private": true,
+  "version": "1.0.0",
+  "description": "Generate exposure masks for Anycubic printers from PCB Gerbers",
+  "homepage": "https://Andrew-Dickinson.github.io/photonic-etcher",
+  "bugs": {
+    "url": "https://github.com/Andrew-Dickinson/photonic-etcher/issues"
+  },
+  "license": "MIT",
+  "browser": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Andrew-Dickinson/photonic-etcher.git"
+  },
+  "author": "Andrew Dickinson <andrew.dickinson.0216@gmail.com>",
   "dependencies": {
     "@svgdotjs/svg.js": "^3.1.2",
     "@testing-library/jest-dom": "^5.16.2",
@@ -23,7 +34,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
@@ -42,5 +55,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "gh-pages": "^3.2.3"
   }
 }

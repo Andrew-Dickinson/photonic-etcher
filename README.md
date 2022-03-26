@@ -6,7 +6,7 @@
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
 
-Photonic Etcher is a web-based tool for converting gerber files into "printable" exposure files for Anycubic Photon SLA 3D printers. This allows you to use your SLA printer to do photo-lithography without the need for transparency sheets or a separate UV light source.
+Photonic Etcher is a browser-based tool for converting gerber files into "printable" exposure files for Anycubic Photon SLA 3D printers. This allows you to use your SLA printer to do photo-lithography without the need for transparency sheets or a separate UV light source.
 
 ![An animated GIF showing how Photonic Etcher is used](/demo.gif?raw=true)
 
@@ -23,6 +23,17 @@ Photonic Etcher is a web-based tool for converting gerber files into "printable"
  - .pwms (Photon Mono SE)
 
 If you're interested in support for additional formats, [open an issue](https://github.com/Andrew-Dickinson/photonic-etcher/issues/new), and I'll look into it.
+
+## Get Started
+Get started by visiting the hosted site at: https://andrew-dickinson.github.io/photonic-etcher
+
+Also available as an offline application for (Windows, MacOS, and Linux) via [neuralino.js](https://neutralino.js.org/).
+
+## Built With
+- [React](https://reactjs.org/)
+- [Bootstrap](https://getbootstrap.com/)
+- pcb-stackup & gerber-to-svg ([Tracespace](https://github.com/tracespace/tracespace))
+- [svg.js](https://svgjs.dev/)
 
 ## Contributing
 
@@ -52,6 +63,7 @@ Project Link: [https://github.com/Andrew-Dickinson/nyct-gtfs](https://github.com
 * [Choose an Open Source License](https://choosealicense.com)
 * [Best-README-Template](https://github.com/othneildrew/Best-README-Template)
 * [Thomas Sanladerer's Video (Inspiration)](https://www.youtube.com/watch?v=RudStbSApdE)
+* Icon - Pcb by Hai Studio from [NounProject.com](https://thenounproject.com/icon/pcb-3188305/)
 
 
 [contributors-shield]: https://img.shields.io/github/contributors/Andrew-Dickinson/photonic-etcher.svg?style=for-the-badge
