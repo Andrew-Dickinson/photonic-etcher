@@ -1,5 +1,6 @@
 import {SVG as SVGJS} from '@svgdotjs/svg.js';
-import {renderPhoton, renderStackup, downloadFiles as downloadFilesFunc} from "../../renderer/pcbAPI";
+import {renderPhoton, renderStackup } from "../../renderer/pcbAPI";
+import {downloadFiles as downloadFilesFunc, downloadFile as downloadFileFunc} from "../../renderer/download_files";
 import JSZip from "jszip";
 
 
@@ -53,7 +54,11 @@ export async function renderPhotonFiles(layersToExport, export_options) {
 }
 
 export async function downloadFiles(filesToDownload, rootFileName) {
-    return await downloadFilesFunc(filesToDownload, rootFileName);
+    await downloadFilesFunc(filesToDownload, rootFileName);
+}
+
+export async function downloadFile(filesToDownload) {
+    await downloadFileFunc(filesToDownload);
 }
 
 export function modifyRawSVG(layer, invert, drill, drillLayerSVGs) {

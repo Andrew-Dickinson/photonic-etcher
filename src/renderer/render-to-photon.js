@@ -9,6 +9,9 @@ const {CanvasToImage} = require("./canvas_to_img");
     const outputResolution = options.printerSettings.resolution; // px * px
     const xyRes = options.printerSettings.xyRes; // mm
 
+    const longRes = Math.max(outputResolution[0], outputResolution[1]);
+    const shortRes = Math.min(outputResolution[0], outputResolution[1]);
+
     const flipTopLayersHorizontal = options.flipBools[0];
     const flipTopLayersVertical = options.flipBools[1];
     const flipBottomLayersHorizontal = options.flipBools[2];
@@ -39,13 +42,13 @@ const {CanvasToImage} = require("./canvas_to_img");
         }
 
         if (fileNameCounts[layer.filename] === 0){
-            outputFileName = layer.filename + ".pwms";
+            outputFileName = layer.filename + "." + options.printerSettings.fileFormat;
         } else {
             const duplicate_num = fileNameCounts[layer.filename] + 2;
             if (layer.filename.includes(".")){
-                outputFileName = layer.filename.replace(".", "_" + duplicate_num + ".") + ".pwms"
+                outputFileName = layer.filename.replace(".", "_" + duplicate_num + ".") + "." + options.printerSettings.fileFormat
             } else {
-                outputFileName = layer.filename + "_" + duplicate_num + ".pwms";
+                outputFileName = layer.filename + "_" + duplicate_num +  "." + options.printerSettings.fileFormat;
             }
         }
         fileNameCounts[layer.filename] += 1;
@@ -122,18 +125,27 @@ const {CanvasToImage} = require("./canvas_to_img");
 
         const cornerToCoords = {
             "TL": [x_offset_px, y_offset_px],
-            "TR": [outputResolution[1] - x_offset_px - board_width_px, y_offset_px],
-            "BL": [x_offset_px, outputResolution[0] - y_offset_px - board_height_px],
+            "TR": [longRes - x_offset_px - board_width_px, y_offset_px],
+            "BL": [x_offset_px, shortRes - y_offset_px - board_height_px],
             "BR": [
-                outputResolution[1] - x_offset_px - board_width_px,
-                outputResolution[0] - y_offset_px - board_height_px
+                longRes - x_offset_px - board_width_px,
+                shortRes - y_offset_px - board_height_px
             ]
         }
         const anchorCoords = cornerToCoords[options.anchorCorner];
 
-        ctx.translate(outputResolution[0]/2,outputResolution[1]/2);
-        ctx.rotate(Math.PI / 2);
-        ctx.translate(-outputResolution[1]/2, -outputResolution[0]/2);
+        if (options.printerSettings.rotate180) {
+            ctx.translate(outputResolution[0]/2,outputResolution[1]/2);
+            ctx.rotate(Math.PI);
+            ctx.translate(-outputResolution[0]/2, -outputResolution[1]/2);
+        }
+
+        if (outputResolution[0] < outputResolution[1]) {
+            ctx.translate(outputResolution[0]/2,outputResolution[1]/2);
+            ctx.rotate(Math.PI / 2);
+            ctx.translate(-outputResolution[1]/2, -outputResolution[0]/2);
+        }
+
         ctx.drawImage(layerImg, anchorCoords[0], anchorCoords[1])
 
         //////////////////////////////// END DRAW BOARD IN CORRECT LOCATION ON CANVAS ////////////////////////
@@ -162,14 +174,28 @@ const {CanvasToImage} = require("./canvas_to_img");
         // that is generated, therefore we render the above canvas to PNG and then draw it un-rotated on a new one
 
         const rotatedCanvas = document.createElement('canvas');
-        rotatedCanvas.width = outputResolution[1];
-        rotatedCanvas.height = outputResolution[0];
+
+        rotatedCanvas.width = Math.max(outputResolution[0], outputResolution[1]);
+        rotatedCanvas.height = Math.min(outputResolution[0], outputResolution[1]);
+
         const originalCanvasImg = await CanvasToImage(canvas);
 
         const previewCTX = rotatedCanvas.getContext("2d");
-        previewCTX.translate(outputResolution[1]/2,outputResolution[0]/2);
-        previewCTX.rotate(-Math.PI / 2);
-        previewCTX.translate(-outputResolution[0]/2, -outputResolution[1]/2);
+
+        if (options.printerSettings.rotate180 && outputResolution[0] < outputResolution[1]) {
+            previewCTX.translate(outputResolution[1]/2,outputResolution[0]/2);
+            previewCTX.rotate(Math.PI / 2);
+            previewCTX.translate(-outputResolution[0]/2, -outputResolution[1]/2);
+        } else if (options.printerSettings.rotate180) {
+            previewCTX.translate(outputResolution[0]/2,outputResolution[1]/2);
+            previewCTX.rotate(-Math.PI);
+            previewCTX.translate(-outputResolution[0]/2, -outputResolution[1]/2);
+        } else if (outputResolution[0] < outputResolution[1]) {
+            previewCTX.translate(outputResolution[1]/2,outputResolution[0]/2);
+            previewCTX.rotate(-Math.PI / 2);
+            previewCTX.translate(-outputResolution[0]/2, -outputResolution[1]/2);
+        }
+
         previewCTX.drawImage(originalCanvasImg, 0, 0);
         ////////
 

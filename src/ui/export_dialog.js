@@ -1,15 +1,121 @@
 import {Alert, Button, Modal, ProgressBar, Table} from "react-bootstrap";
 import React, {useEffect, useState} from "react";
 import {titleCase} from "title-case";
-import {addDisplayOrderField, downloadFiles, renderPhotonFiles} from "./utils/pcb_api_utils";
+import {addDisplayOrderField, downloadFiles, downloadFile, renderPhotonFiles} from "./utils/pcb_api_utils";
 
 const printerModels = {
-    'AnyCubic Photon Mono SE': {
+    'AnyCubic Photon Ultra (.dlp)': {
+        "fileVersion": [515, 5],
+        "xyRes": 0.080,
+        "resolution": [1280, 720],
+        "previewResolution": [224, 168],
+        "rotate180": true,
+        "encoding": "RLE4",
+        "fileFormat": "dlp"
+    },
+    'AnyCubic Photon M3 (.pm3)': {
+        "fileVersion": [516, 8],
+        "xyRes": 0.040,
+        "resolution": [4096, 2560],
+        "physicalDimensions": [163.92, 102.4, 180.0],
+        "previewResolution": [224, 168],
+        "rotate180": true,
+        "encoding": "RLE4",
+        "fileFormat": "pm3"
+    },
+    'AnyCubic Photon M3 Max (.pm3m)': {
+        "fileVersion": [516, 8],
+        "xyRes": 0.046,
+        "resolution": [6480, 3600],
+        "physicalDimensions": [298.08, 165.6, 300.0],
+        "previewResolution": [224, 168],
+        "rotate180": true,
+        "encoding": "RLE4",
+        "fileFormat": "pm3m"
+    },
+    'AnyCubic Photon Mono SQ (.pwsq)': {
+        "fileVersion": [515, 5],
+        "xyRes": 0.050,
+        "resolution": [2400, 2560],
+        "previewResolution": [224, 168],
+        "rotate180": false,
+        "encoding": "RLE4",
+        "fileFormat": "pmsq"
+    },
+    'AnyCubic Photon Zero (.pw0)': {
+        "fileVersion": [1, 4],
+        "xyRes": 0.1155,
+        "resolution": [480, 854],
+        "previewResolution": [224, 168],
+        "rotate180": false,
+        "encoding": "RLE4",
+        "fileFormat": "pw0"
+    },
+    'AnyCubic Photon Mono 4K (.pwma)': {
+        "fileVersion": [516, 8],
+        "xyRes": 0.035,
+        "resolution": [3840, 2400],
+        "physicalDimensions": [134.4, 84.0, 165.0],
+        "previewResolution": [224, 168],
+        "rotate180": true,
+        "encoding": "RLE4",
+        "fileFormat": "pwma"
+    },
+    'AnyCubic Photon Mono X 6K & Photon M3 Plus (.pwmb)': {
+        "fileVersion": [516, 8],
+        "xyRes": 0.0344,
+        "resolution": [5760, 3600],
+        "physicalDimensions": [197.0, 122.8, 245.0],
+        "previewResolution": [224, 168],
+        "rotate180": true,
+        "encoding": "RLE4",
+        "fileFormat": "pwmb"
+    },
+    'AnyCubic Photon Mono (.pwmo)': {
+        "fileVersion": [1, 4],
         "xyRes": 0.051,
         "resolution": [1620, 2560],
         "previewResolution": [224, 168],
+        "rotate180": false,
+        "encoding": "RLE4",
+        "fileFormat": "pwmo"
+    },
+    'AnyCubic Photon Mono SE (.pwms)': {
+        "fileVersion": [1, 4],
+        "xyRes": 0.051,
+        "resolution": [1620, 2560],
+        "previewResolution": [224, 168],
+        "rotate180": false,
+        "encoding": "RLE4",
         "fileFormat": "pwms"
-    }
+    },
+    'AnyCubic Photon Mono X (.pwmx)': {
+        "fileVersion": [1, 4],
+        "xyRes": 0.050,
+        "resolution": [3840, 2400],
+        "previewResolution": [224, 168],
+        "rotate180": false,
+        "encoding": "RLE4",
+        "fileFormat": "pwmx"
+    },
+    'AnyCubic Photon & Photon S (.pws)': {
+        "fileVersion": [1, 4],
+        "xyRes": 0.047,
+        "resolution": [1440, 2560],
+        "previewResolution": [224, 168],
+        "rotate180": true,
+        "encoding": "RLE",
+        "fileFormat": "pws"
+    },
+    'AnyCubic Photon X (.pwx)': {
+        "fileVersion": [1, 4],
+        "xyRes": 0.075,
+        "resolution": [2560, 1600],
+        "previewResolution": [224, 168],
+        "rotate180": true,
+        "encoding": "RLE4",
+        "fileFormat": "pwx"
+    },
 }
 
 
@@ -125,10 +231,18 @@ function ExportDialog(props){
                                                 <div className={"row mb-3"} key={photonFile.layerId}>
                                                     <div className={"col-12"}>
                                                         <div className="card">
-                                                            <div className="card-header">
-                                                                <h5 className="card-title">
+                                                            <div className="card-header flex align-items-center">
+                                                                <h5 className="card-title m-0">
                                                                     {titleCase(photonFile.layer.type) + " "}
                                                                     ({titleCase(photonFile.layer.side)})</h5>
+                                                                <Button variant="primary"
+                                                                        className={"ml-auto"}
+                                                                        onClick={() => {
+                                                                            downloadFile(photonFile)
+                                                                        }}
+                                                                >
+                                                                    Download
+                                                                </Button>
                                                             </div>
                                                             <div className={"grey card-body"}>
                                                                 <img src={photonFile.layerPNGURL} className={"w-100"}/>
@@ -214,7 +328,9 @@ function ExportDialog(props){
                                 <div className="input-group flex-nowrap">
                                     <select className="form-select" aria-label="Default select example"
                                             defaultValue={Object.entries(printerModels)[0][0]}
-                                            onChange={(e) => setPrinterModel(e.target.value)}>
+                                            onChange={(e) => setPrinterModel(e.target.value)}
+                                            value={printerModel}
+                                    >
                                         {
                                             Object.entries(printerModels).map((entry, _) => {
                                                 const modelName = entry[0];
@@ -399,11 +515,7 @@ function ExportDialog(props){
                 <Button variant="primary" disabled={!inputsValid() || previewLoading}
                         onClick={() => {
                             if (showPreview) {
-                                downloadFiles(photonFiles, rootFileName).then(filePath => {
-                                    if (filePath) {
-                                        setOutputPath(filePath);
-                                    }
-                                })
+                                downloadFiles(photonFiles, rootFileName)
                             } else {
                                 setShowPreview(true);
                                 setPreviewLoading(true);

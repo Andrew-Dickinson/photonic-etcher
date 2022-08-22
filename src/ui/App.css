@@ -121,6 +121,10 @@ html, body, .pagefill {
   margin-right: 7px;
 }
 
+.ml-auto {
+  margin-left: auto;
+}
+
 .cursor-pointer {
   cursor: pointer !important;
 }

@@ -1,6 +1,6 @@
 import renderToPhoton from "./render-to-photon";
 import renderStackup from "./stackup-renderer"
-import downloadFiles from "./download_files"
+import {downloadFiles} from "./download_files"
 
 // async function renderStackup(rendered_layers, options){
 //
