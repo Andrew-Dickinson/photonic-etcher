@@ -1,6 +1,6 @@
 {
   "name": "photonic-etcher",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Generate exposure masks for Anycubic printers from PCB Gerbers",
   "homepage": ".",
   "bugs": {
@@ -27,9 +27,9 @@
     "react": "^17.0.2",
     "react-bootstrap": "^2.1.2",
     "react-dom": "^17.0.2",
-    "react-scripts": "5.0.0",
+    "react-scripts": "5.0.1",
     "title-case": "^3.0.3",
-    "nth-check": ">=2.0.1",
+    "nth-check": ">=2.1.1",
     "minimist": ">=1.2.6"
   },
   "scripts": {
@@ -59,6 +59,6 @@
     ]
   },
   "devDependencies": {
-    "gh-pages": "^3.2.3"
+    "gh-pages": "^4.0.0"
   }
 }
