@@ -13,6 +13,7 @@ Photonic Etcher is a browser-based tool for converting gerber files into "printa
 ### Features
 - Automatic layer identification & full-board preview (thanks [tracespace](https://github.com/tracespace/tracespace)!)
 - Output any gerber layer type
+- PCB Preview Rendered into file thumbnail
 - Flip output (horizontal and vertical)
 - Configurable exposure times per layer
 - Invert mask per layer (for photo-positive vs. photo-negative processes)
@@ -20,7 +21,18 @@ Photonic Etcher is a browser-based tool for converting gerber files into "printa
 - Configurable anchor corner and jig offsets (allows repeatable etching for multi-layer processes e.g. copper & solder mask)
 
 ### Formats Currently Supported
- - .pwms (Photon Mono SE)
+ - AnyCubic Photon Ultra (.dlp)
+ - AnyCubic Photon M3 (.pm3)
+ - AnyCubic Photon M3 Max (.pm3m)
+ - AnyCubic Photon Mono SQ (.pwsq)
+ - AnyCubic Photon Zero (.pw0)
+ - AnyCubic Photon Mono 4K (.pwma)
+ - AnyCubic Photon Mono X 6K & Photon M3 Plus (.pwmb)
+ - AnyCubic Photon Mono (.pwmo)
+ - AnyCubic Photon Mono SE (.pwms)
+ - AnyCubic Photon Mono X (.pwmx)
+ - AnyCubic Photon & Photon S (.pws)
+ - AnyCubic Photon X (.pwx)
 
 If you're interested in support for additional formats, [open an issue](https://github.com/Andrew-Dickinson/photonic-etcher/issues/new), and I'll look into it.
 
