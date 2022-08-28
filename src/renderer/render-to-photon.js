@@ -33,7 +33,7 @@ const {CanvasToImage} = require("./canvas_to_img");
         const svgXMLObj = parser.parse(layer.svg);
         const board_width_mm = parseFloat(svgXMLObj.svg['@_width'].replace("mm", ""));
         const board_height_mm = parseFloat(svgXMLObj.svg['@_height'].replace("mm", ""));
-        const viewbox = svgXMLObj.svg['@_viewBox'].split(' ');
+        const viewbox = svgXMLObj.svg['@_viewBox'].split(' ').map((str) => parseInt(str));
         const exposureTime = options.exposureTimes[layer.id];
         let outputFileName = ""
 
@@ -58,21 +58,24 @@ const {CanvasToImage} = require("./canvas_to_img");
         const flipHorizontal = layer.side === "top" ? flipTopLayersHorizontal : flipBottomLayersHorizontal;
         const flipVertical = layer.side === "top" ? flipTopLayersVertical : flipBottomLayersVertical;
 
-        const translateX = flipHorizontal ? viewbox[2] : "0";
-        const translateY = flipVertical ? viewbox[3] : "0";
+        const translateX = flipHorizontal ? Math.floor(2 * (viewbox[0] + (viewbox[2] / 2))).toString() : "0";
+        const translateY = flipVertical ? Math.floor(2 * (viewbox[1] + (viewbox[3] / 2))).toString() : "0";
 
         const scaleX = flipHorizontal ? "-1" : "1";
         const scaleY = flipVertical ? "-1" : "1";
 
-        const transformStr = "translate(" + translateX + ", " + translateY + ") " +
-                             "scale(" + scaleX + ", " + scaleY + ")";
+        const translateStr = "translate(" + translateX + ", " + translateY + ") ";
+        const scaleStr     = "scale(" + scaleX + ", " + scaleY + ")";
 
         const originalSVG = SVG(layer.svg);
         originalSVG.attr('shape-rendering', "crispEdges");
         const elements = originalSVG.children();
-        const new_group = originalSVG.group();
-        new_group.attr("transform", transformStr)
-        elements.filter((el) => el.type !== "defs").forEach((el) => new_group.add(el));
+        const new_parent_group = originalSVG.group();
+        const new_child_group = originalSVG.group();
+        new_parent_group.add(new_child_group);
+        new_parent_group.attr("transform", translateStr);
+        new_child_group.attr("transform", scaleStr);
+        elements.filter((el) => el.type !== "defs").forEach((el) => new_child_group.add(el));
         const finalSVG = originalSVG.svg();
         ///////////////////////////////// END HANDLE FLIP BOOLS ////////////////////////////////////////////////
 
