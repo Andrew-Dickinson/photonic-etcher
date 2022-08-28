@@ -63,12 +63,12 @@ export async function downloadFile(filesToDownload) {
 
 export function modifyRawSVG(layer, invert, drill, drillLayerSVGs) {
     const layerSVG = SVGJS(layer.svg);
+    const viewbox = layerSVG.viewbox();
     if (drill) {
         const originalG = layerSVG.find('g').filter((g) => g.parent() === layerSVG.root())[0];
         const newG = layerSVG.group().add(originalG);
 
-        // const blueBG = layerSVG.rect().width("100%").height("100%").back().fill("#00f");
-        const maskBG = layerSVG.rect().width("100%").height("100%").fill("#fff");
+        const maskBG = layerSVG.rect().x(viewbox.x).y(viewbox.y).width("100%").height("100%").fill("#fff");
         const drillMask = layerSVG.mask().add(maskBG);
 
         drillLayerSVGs.forEach((singleDrillSVG) => {
@@ -88,10 +88,10 @@ export function modifyRawSVG(layer, invert, drill, drillLayerSVGs) {
 
     if (invert) {
         layerSVG.attr({color: "#fff"});
-        layerSVG.rect().width("100%").height("100%").fill("#000").back();
+        layerSVG.rect().x(viewbox.x).y(viewbox.y).width("100%").height("100%").fill("#000").back();
     } else {
         layerSVG.attr({color: "#000"});
-        layerSVG.rect().width("100%").height("100%").fill("#fff").back();
+        layerSVG.rect().x(viewbox.x).y(viewbox.y).width("100%").height("100%").fill("#fff").back();
     }
 
     const newLayer = {...layer};
