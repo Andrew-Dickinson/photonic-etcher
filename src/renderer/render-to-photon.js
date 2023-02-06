@@ -9,8 +9,8 @@ const {CanvasToImage} = require("./canvas_to_img");
     const outputResolution = options.printerSettings.resolution; // px * px
     const xyRes = options.printerSettings.xyRes; // mm
 
-    const longRes = Math.max(outputResolution[0], outputResolution[1]);
-    const shortRes = Math.min(outputResolution[0], outputResolution[1]);
+    const outputWidth = Math.max(outputResolution[0], outputResolution[1]);
+    const outputHeight = Math.min(outputResolution[0], outputResolution[1]);
 
     const flipTopLayersHorizontal = options.flipBools[0];
     const flipTopLayersVertical = options.flipBools[1];
@@ -128,11 +128,15 @@ const {CanvasToImage} = require("./canvas_to_img");
 
         const cornerToCoords = {
             "TL": [x_offset_px, y_offset_px],
-            "TR": [longRes - x_offset_px - board_width_px, y_offset_px],
-            "BL": [x_offset_px, shortRes - y_offset_px - board_height_px],
+            "TR": [outputWidth - x_offset_px - board_width_px, y_offset_px],
+            "BL": [x_offset_px, outputHeight - y_offset_px - board_height_px],
             "BR": [
-                longRes - x_offset_px - board_width_px,
-                shortRes - y_offset_px - board_height_px
+                outputWidth - x_offset_px - board_width_px,
+                outputHeight - y_offset_px - board_height_px
+            ],
+            "C": [
+                (outputWidth / 2) - x_offset_px - (board_width_px / 2),
+                (outputHeight / 2) - y_offset_px - (board_height_px / 2)
             ]
         }
         const anchorCoords = cornerToCoords[options.anchorCorner];
