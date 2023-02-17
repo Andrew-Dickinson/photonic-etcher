@@ -154,13 +154,11 @@ function ExportDialog(props){
         if (anchorOffsetText[0].length > 0) {
             try {
                 newVals[0] = parseFloat(anchorOffsetText[0]);
-                if (newVals[0] < 0) newVals[0] = null;
             } catch {}
         }
         if (anchorOffsetText[1].length > 0) {
             try {
                 newVals[1] = parseFloat(anchorOffsetText[1]);
-                if (newVals[1] < 0) newVals[1] = null;
             } catch {}
         }
         setAnchorOffset(newVals);
@@ -398,7 +396,7 @@ function ExportDialog(props){
                                                    }}
                                             />
                                             <span className="input-group-text">mm</span>
-                                            <div className="invalid-feedback">Enter a non-negative number</div>
+                                            <div className="invalid-feedback">Please enter a number</div>
                                         </div>
                                     </div>
                                     <div className={"col-6"}>
@@ -419,7 +417,7 @@ function ExportDialog(props){
                                                    }}
                                             />
                                             <span className="input-group-text">mm</span>
-                                            <div className="invalid-feedback">Enter a non-negative number</div>
+                                            <div className="invalid-feedback">Please enter a number</div>
                                         </div>
                                     </div>
                                 </div>
