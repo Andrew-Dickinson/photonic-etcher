@@ -135,8 +135,8 @@ const {CanvasToImage} = require("./canvas_to_img");
                 outputHeight - y_offset_px - board_height_px
             ],
             "C": [
-                (outputWidth / 2) - x_offset_px - (board_width_px / 2),
-                (outputHeight / 2) - y_offset_px - (board_height_px / 2)
+                (outputWidth / 2) + x_offset_px - (board_width_px / 2),
+                (outputHeight / 2) + y_offset_px - (board_height_px / 2)
             ]
         }
         const anchorCoords = cornerToCoords[options.anchorCorner];
