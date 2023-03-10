@@ -343,30 +343,48 @@ function ExportDialog(props){
                                 <div className={"w-50"}>
                                     <div className="card">
                                         <div className="card-body box p-2">
-                                            <div className={"rows header"}>
-                                                <input className="form-check-input float-start" type="radio"
-                                                       name={"anchorCorner"} id="anchorTopLeft" aria-label=""
-                                                       checked={anchorCorner === "TL"}
-                                                       onChange={() => setAnchorCorner("TL")}
-                                                />
-                                                <input className="form-check-input float-end" type="radio"
-                                                       name={"anchorCorner"} id="anchorTopRight" aria-label=""
-                                                       checked={anchorCorner === "TR"}
-                                                       onChange={() => setAnchorCorner("TR")}
-                                                />
+                                            <div className="d-flex justify-content-between bd-highlight mb-3">
+                                                <div className="p-2 bd-highlight"><input className="form-check-input justify-content-start" type="radio"
+                                                        name={"anchorCorner"} id="anchorTopLeft" aria-label=""
+                                                        checked={anchorCorner === "TL"}
+                                                        onChange={() => setAnchorCorner("TL")}
+                                                    /></div>
+                                                <div className="p-2 bd-highlight"/>
+                                                <div className="p-2 bd-highlight">
+                                                    <input className="form-check-input justify-content-end" type="radio"
+                                                        name={"anchorCorner"} id="anchorTopRight" aria-label=""
+                                                        checked={anchorCorner === "TR"}
+                                                        onChange={() => setAnchorCorner("TR")}
+                                                    />
+                                                </div>
                                             </div>
-                                            <div className={"rows content"} style={{height: "40px"}}/>
-                                            <div className={"rows header"}>
-                                                <input className="form-check-input float-start" type="radio"
-                                                       name={"anchorCorner"} id="anchorBottomLeft" aria-label=""
-                                                       checked={anchorCorner === "BL"}
-                                                       onChange={() => setAnchorCorner("BL")}
-                                                />
-                                                <input className="form-check-input float-end" type="radio"
-                                                       name={"anchorCorner"} id="anchorBottomRight" aria-label=""
-                                                       checked={anchorCorner === "BR"}
-                                                       onChange={() => setAnchorCorner("BR")}
-                                                />
+                                            <div className="d-flex justify-content-between bd-highlight mb-3">
+                                                <div className="p-2 bd-highlight"/>
+                                                <div className="p-2 bd-highlight">
+                                                    <input className="form-check-input justify-content-center" type="radio"
+                                                            name={"anchorCorner"} id="anchorCenter" aria-label=""
+                                                            checked={anchorCorner === "C"}
+                                                            onChange={() => setAnchorCorner("C")}
+                                                        />
+                                                    </div>
+                                                <div className="p-2 bd-highlight"/>
+                                            </div>
+                                            <div className="d-flex justify-content-between bd-highlight mb-3">
+                                                <div className="p-2 bd-highlight">
+                                                    <input className="form-check-input float-start" type="radio"
+                                                        name={"anchorCorner"} id="anchorBottomLeft" aria-label=""
+                                                        checked={anchorCorner === "BL"}
+                                                        onChange={() => setAnchorCorner("BL")}
+                                                    />
+                                                </div>
+                                                <div className="p-2 bd-highlight"/>
+                                                <div className="p-2 bd-highlight">
+                                                    <input className="form-check-input float-end" type="radio"
+                                                        name={"anchorCorner"} id="anchorBottomRight" aria-label=""
+                                                        checked={anchorCorner === "BR"}
+                                                        onChange={() => setAnchorCorner("BR")}
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
