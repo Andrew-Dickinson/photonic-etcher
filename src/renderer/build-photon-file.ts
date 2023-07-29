@@ -20,7 +20,7 @@ function scanForRun(imageDataArray, start, maxRun){
 }
 
 function encodeRLE4(greyScaleImageData) {
-    const output = [];
+    const output: number[] = [];
 
     for (let i = 0; i < greyScaleImageData.length; ){
         const run_len = scanForRun(greyScaleImageData, i, RLE4_MAX_RUN);
@@ -39,7 +39,7 @@ function encodeRLE4(greyScaleImageData) {
 }
 
 function encodeRLE(greyScaleImageData) {
-    const output = [];
+    const output: number[] = [];
 
     for (let i = 0; i < greyScaleImageData.length; ){
         const run_len = scanForRun(greyScaleImageData, i, RLE_MAX_RUN);
@@ -103,7 +103,7 @@ function writePhotonHeaders(output, headerAddr, previewAddr, layerdefAddr, layer
     output.setFloat32(headerAddr + 44, 4.0, true); // lift speed
     output.setFloat32(headerAddr + 48, 4.0, true); // retract speed
     output.setFloat32(headerAddr + 52, 0.0, true); //volume
-    output.setUint32(headerAddr + 56, 0, true); // anti-alias count??
+    output.setUint32(headerAddr + 56, 1, true); // anti-alias count??
     output.setUint32(headerAddr + 60, resolution[0], true); // x res
     output.setUint32(headerAddr + 64, resolution[1], true); // y res
     output.setFloat32(headerAddr + 68, 1.04, true); //weight
@@ -128,7 +128,7 @@ export async function buildPhotonFile(layerData, previewData, exposureTime, prin
         greyScaleImageData[i] = layerData[i*4];
     }
 
-    let layerDataBlob = null;
+    let layerDataBlob: Uint8Array|null = null;
     if (printerSettings.encoding === "RLE4") {
         layerDataBlob = encodeRLE4(greyScaleImageData);
     } else if (printerSettings.encoding === "RLE") {
