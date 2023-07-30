@@ -11,6 +11,7 @@ Photonic Etcher is a browser-based tool for converting gerber files into "printa
 ![An animated GIF showing how Photonic Etcher is used](/demo.gif?raw=true)
 
 ### Features
+
 - Automatic layer identification & full-board preview (thanks [tracespace](https://github.com/tracespace/tracespace)!)
 - Output any gerber layer type
 - PCB Preview Rendered into file thumbnail
@@ -21,27 +22,31 @@ Photonic Etcher is a browser-based tool for converting gerber files into "printa
 - Configurable anchor corner and jig offsets (allows repeatable etching for multi-layer processes e.g. copper & solder mask)
 
 ### Formats Currently Supported
- - AnyCubic Photon Ultra (.dlp)
- - AnyCubic Photon M3 (.pm3)
- - AnyCubic Photon M3 Max (.pm3m)
- - AnyCubic Photon Mono SQ (.pwsq)
- - AnyCubic Photon Zero (.pw0)
- - AnyCubic Photon Mono 4K (.pwma)
- - AnyCubic Photon Mono X 6K & Photon M3 Plus (.pwmb)
- - AnyCubic Photon Mono (.pwmo)
- - AnyCubic Photon Mono SE (.pwms)
- - AnyCubic Photon Mono X (.pwmx)
- - AnyCubic Photon & Photon S (.pws)
- - AnyCubic Photon X (.pwx)
+
+- AnyCubic Photon Ultra (.dlp)
+- AnyCubic Photon M3 (.pm3)
+- AnyCubic Photon M3 Max (.pm3m)
+- AnyCubic Photon Mono SQ (.pwsq)
+- AnyCubic Photon Zero (.pw0)
+- AnyCubic Photon Mono 4K (.pwma)
+- AnyCubic Photon Mono X 6K & Photon M3 Plus (.pwmb)
+- AnyCubic Photon Mono (.pwmo)
+- AnyCubic Photon Mono SE (.pwms)
+- AnyCubic Photon Mono X (.pwmx)
+- AnyCubic Photon & Photon S (.pws)
+- AnyCubic Photon (.photon)
+- AnyCubic Photon X (.pwx)
 
 If you're interested in support for additional formats, [open an issue](https://github.com/Andrew-Dickinson/photonic-etcher/issues/new), and I'll look into it.
 
 ## Get Started
+
 Get started by visiting the hosted site at: https://andrew-dickinson.github.io/photonic-etcher
 
 Also available as an offline application for [Windows, MacOS, and Linux](https://github.com/Andrew-Dickinson/photonic-etcher/releases) as a [neutralino.js](https://neutralino.js.org/) build.
 
 ## Built With
+
 - [React](https://reactjs.org/)
 - [Bootstrap](https://getbootstrap.com/)
 - pcb-stackup & gerber-to-svg ([Tracespace](https://github.com/tracespace/tracespace))
@@ -72,11 +77,10 @@ Project Link: [https://github.com/Andrew-Dickinson/nyct-gtfs](https://github.com
 
 ## Acknowledgments
 
-* [Choose an Open Source License](https://choosealicense.com)
-* [Best-README-Template](https://github.com/othneildrew/Best-README-Template)
-* [Thomas Sanladerer's Video (Inspiration)](https://www.youtube.com/watch?v=RudStbSApdE)
-* Icon - Pcb by Hai Studio from [NounProject.com](https://thenounproject.com/icon/pcb-3188305/)
-
+- [Choose an Open Source License](https://choosealicense.com)
+- [Best-README-Template](https://github.com/othneildrew/Best-README-Template)
+- [Thomas Sanladerer's Video (Inspiration)](https://www.youtube.com/watch?v=RudStbSApdE)
+- Icon - Pcb by Hai Studio from [NounProject.com](https://thenounproject.com/icon/pcb-3188305/)
 
 [contributors-shield]: https://img.shields.io/github/contributors/Andrew-Dickinson/photonic-etcher.svg?style=for-the-badge
 [contributors-url]: https://github.com/Andrew-Dickinson/photonic-etcher/graphs/contributors

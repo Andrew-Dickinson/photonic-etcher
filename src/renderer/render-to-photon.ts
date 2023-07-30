@@ -1,16 +1,22 @@
 import { XMLParser } from "fast-xml-parser";
 import { ExportOptions, PhotonFile } from "./pcbAPI";
 import { StackupLayer } from "./stackup-renderer";
-import { Svg } from "@svgdotjs/svg.js";
+import { Svg, SVG } from "@svgdotjs/svg.js";
+import { SVGToImage } from "./svg_to_png";
+import { buildPhotonFile } from "./build-photon-file";
+import { CanvasToImage } from "./canvas_to_img";
+import { PrinterModel } from "../ui/export_dialog";
 
-// const {XMLParser} = require('fast-xml-parser');
-const {SVG} = require('@svgdotjs/svg.js');
+export interface BuildOutputFileArgs {
+    layerData: Uint8ClampedArray;
+    previewData: Uint8ClampedArray;
+    exposureTime: number;
+    printerSettings: PrinterModel & { printerModel: string; };
 
-const {buildPhotonFile} = require("./build-photon-file");
-const {SVGToImage} = require("./svg_to_png");
-const {CanvasToImage} = require("./canvas_to_img");
+}
 
- export default async function renderToPhoton(layers:(StackupLayer&{displayOrder: number, inverted: boolean})[], options: ExportOptions): Promise<PhotonFile[]>{
+export default async function renderToPhoton(layers: (StackupLayer & { displayOrder: number, inverted: boolean })[], options: ExportOptions,
+    fileBuilder: (args: BuildOutputFileArgs) => Promise<Blob>): Promise<PhotonFile[]> {
     const outputResolution = options.printerSettings.resolution; // px * px
     const xyRes = options.printerSettings.xyRes; // mm
 
@@ -26,7 +32,7 @@ const {CanvasToImage} = require("./canvas_to_img");
 
     const xmlOptions = {
         ignoreAttributes: false,
-        attributeNamePrefix : "@_"
+        attributeNamePrefix: "@_"
     };
 
     const parser = new XMLParser(xmlOptions);
@@ -46,14 +52,14 @@ const {CanvasToImage} = require("./canvas_to_img");
             fileNameCounts[layer.filename] = 0
         }
 
-        if (fileNameCounts[layer.filename] === 0){
+        if (fileNameCounts[layer.filename] === 0) {
             outputFileName = layer.filename + "." + options.printerSettings.fileFormat;
         } else {
             const duplicate_num = fileNameCounts[layer.filename] + 2;
-            if (layer.filename.includes(".")){
+            if (layer.filename.includes(".")) {
                 outputFileName = layer.filename.replace(".", "_" + duplicate_num + ".") + "." + options.printerSettings.fileFormat
             } else {
-                outputFileName = layer.filename + "_" + duplicate_num +  "." + options.printerSettings.fileFormat;
+                outputFileName = layer.filename + "_" + duplicate_num + "." + options.printerSettings.fileFormat;
             }
         }
         fileNameCounts[layer.filename] += 1;
@@ -70,7 +76,7 @@ const {CanvasToImage} = require("./canvas_to_img");
         const scaleY = flipVertical ? "-1" : "1";
 
         const translateStr = "translate(" + translateX + ", " + translateY + ") ";
-        const scaleStr     = "scale(" + scaleX + ", " + scaleY + ")";
+        const scaleStr = "scale(" + scaleX + ", " + scaleY + ")";
 
         const originalSVG = SVG(layer.svg) as Svg;
         originalSVG.attr('shape-rendering', "crispEdges");
@@ -147,15 +153,15 @@ const {CanvasToImage} = require("./canvas_to_img");
         const anchorCoords = cornerToCoords[options.anchorCorner];
 
         if (options.printerSettings.rotate180) {
-            ctx.translate(outputResolution[0]/2,outputResolution[1]/2);
+            ctx.translate(outputResolution[0] / 2, outputResolution[1] / 2);
             ctx.rotate(Math.PI);
-            ctx.translate(-outputResolution[0]/2, -outputResolution[1]/2);
+            ctx.translate(-outputResolution[0] / 2, -outputResolution[1] / 2);
         }
 
         if (outputResolution[0] < outputResolution[1]) {
-            ctx.translate(outputResolution[0]/2,outputResolution[1]/2);
+            ctx.translate(outputResolution[0] / 2, outputResolution[1] / 2);
             ctx.rotate(Math.PI / 2);
-            ctx.translate(-outputResolution[1]/2, -outputResolution[0]/2);
+            ctx.translate(-outputResolution[1] / 2, -outputResolution[0] / 2);
         }
 
         ctx.drawImage(layerImg, anchorCoords[0], anchorCoords[1])
@@ -170,12 +176,12 @@ const {CanvasToImage} = require("./canvas_to_img");
             options.printerSettings.previewResolution[0],
             options.printerSettings.previewResolution[1]
         );
-        const photonFileBlob = await buildPhotonFile(
-            rawLayerIMGData.data,
-            rawPreviewData.data,
+        const photonFileBlob = await fileBuilder({
+            layerData: rawLayerIMGData.data,
+            previewData: rawPreviewData.data,
             exposureTime,
-            options.printerSettings
-        );
+            printerSettings: options.printerSettings
+        });
         ///// END Generate PWMS file /////
 
         ///// Generate PNG preview (for the UI) /////
@@ -195,17 +201,17 @@ const {CanvasToImage} = require("./canvas_to_img");
         const previewCTX = rotatedCanvas.getContext("2d")!;
 
         if (options.printerSettings.rotate180 && outputResolution[0] < outputResolution[1]) {
-            previewCTX.translate(outputResolution[1]/2,outputResolution[0]/2);
+            previewCTX.translate(outputResolution[1] / 2, outputResolution[0] / 2);
             previewCTX.rotate(Math.PI / 2);
-            previewCTX.translate(-outputResolution[0]/2, -outputResolution[1]/2);
+            previewCTX.translate(-outputResolution[0] / 2, -outputResolution[1] / 2);
         } else if (options.printerSettings.rotate180) {
-            previewCTX.translate(outputResolution[0]/2,outputResolution[1]/2);
+            previewCTX.translate(outputResolution[0] / 2, outputResolution[1] / 2);
             previewCTX.rotate(-Math.PI);
-            previewCTX.translate(-outputResolution[0]/2, -outputResolution[1]/2);
+            previewCTX.translate(-outputResolution[0] / 2, -outputResolution[1] / 2);
         } else if (outputResolution[0] < outputResolution[1]) {
-            previewCTX.translate(outputResolution[1]/2,outputResolution[0]/2);
+            previewCTX.translate(outputResolution[1] / 2, outputResolution[0] / 2);
             previewCTX.rotate(-Math.PI / 2);
-            previewCTX.translate(-outputResolution[0]/2, -outputResolution[1]/2);
+            previewCTX.translate(-outputResolution[0] / 2, -outputResolution[1] / 2);
         }
 
         previewCTX.drawImage(originalCanvasImg, 0, 0);

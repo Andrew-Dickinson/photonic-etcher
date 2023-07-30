@@ -119,6 +119,15 @@ const printerModels: { [key: string]: PrinterModel } = {
         "encoding": "RLE",
         "fileFormat": "pws"
     },
+    'AnyCubic Photon (.photon)': {
+        "fileVersion": [1, 4],
+        "xyRes": 0.047,
+        "resolution": [1440, 2560],
+        "previewResolution": [224, 168],
+        "rotate180": true,
+        "encoding": "RLE",
+        "fileFormat": "photon"
+    },
     'AnyCubic Photon X (.pwx)': {
         "fileVersion": [1, 4],
         "xyRes": 0.075,

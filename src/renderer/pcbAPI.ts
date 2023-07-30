@@ -2,6 +2,8 @@ import renderToPhoton from "./render-to-photon";
 import renderStackup, { StackupLayer } from "./stackup-renderer"
 import { downloadFiles } from "./download_files"
 import { PrinterModel } from "../ui/export_dialog";
+import { buildLegacyPhotonFile } from "./render-to-legacy-photon";
+import { buildPhotonFile } from "./build-photon-file";
 
 export interface PhotonFile {
     layerId: number,
@@ -19,7 +21,10 @@ export interface ExportOptions {
     flipBools: boolean[]
 }
 export async function renderPhoton(layersToExport: (StackupLayer & { displayOrder: number, inverted: boolean })[], export_options: ExportOptions) {
-    return renderToPhoton(layersToExport, export_options)
+    if (export_options.printerSettings.fileFormat === "photon") {
+        return renderToPhoton(layersToExport, export_options, buildLegacyPhotonFile);
+    }
+    return renderToPhoton(layersToExport, export_options, buildPhotonFile)
 }
 
 
