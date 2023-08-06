@@ -27,6 +27,7 @@
     "canvg": "^4.0.0",
     "fast-xml-parser": "^4.0.7",
     "file-saver": "^2.0.5",
+    "gerber-to-svg": "^4.2.8",
     "jszip": "^3.7.1",
     "minimist": ">=1.2.6",
     "nth-check": ">=2.1.1",
@@ -36,7 +37,8 @@
     "react-dom": "^17.0.2",
     "react-scripts": "5.0.1",
     "title-case": "^3.0.3",
-    "typescript": "^4.9.5"
+    "typescript": "^4.9.5",
+    "whats-that-gerber": "^4.2.7"
   },
   "scripts": {
     "start": "react-app-rewired start",

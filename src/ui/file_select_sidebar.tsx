@@ -1,7 +1,6 @@
 import Filelist from "./filelist";
 import Button from "react-bootstrap/Button";
 import { useEffect, useRef, useState } from "react";
-import React from "react";
 import { GerberFileHandle, convertZIPToFileList } from "./utils/pcb_api_utils";
 
 function FileSelectSideBar(props: {
@@ -63,7 +62,8 @@ function FileSelectSideBar(props: {
                     setFileList(Array.from(inputFile.current.files))
                 }
             }} />
-        <input type='file' id='folder' ref={inputFile2} className={"hidden"}
+        <input type='file' id='folder' ref={inputFile2} className={"hidden"} multiple
+            {...{ webkitdirectory: "true", directory: "true", mozdirectory: "true" }}
             onInput={() => {
                 if (inputFile2.current?.files != null && inputFile2.current.files.length > 0) {
                     setRootFileName(inputFile2.current.files[0].webkitRelativePath.split("/")[0]);
