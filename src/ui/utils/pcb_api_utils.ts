@@ -1,28 +1,38 @@
-import {SVG as SVGJS} from '@svgdotjs/svg.js';
-import {renderPhoton, renderStackup } from "../../renderer/pcbAPI";
+import {Svg, SVG} from '@svgdotjs/svg.js';
+import {ExportOptions, renderPhoton, renderStackup } from "../../renderer/pcbAPI";
 import {downloadFiles as downloadFilesFunc, downloadFile as downloadFileFunc} from "../../renderer/download_files";
 import JSZip from "jszip";
+import { Stackup, StackupLayer } from '../../renderer/stackup-renderer';
+import gerberToSvg from 'gerber-to-svg';
+import { InputLayer } from 'pcb-stackup';
 
 
-export async function convertZIPToFileList(zipFile){
-    const zip_contents = await JSZip.loadAsync(zipFile.arrayBuffer());
+export async function convertZIPToFileList(zipFile: File): Promise<GerberFileHandle[]>{
+    const zip_contents = await JSZip.loadAsync(await zipFile.arrayBuffer());
 
-    return Promise.all(Object.entries(zip_contents.files).map(async (entry, _) => {
+    return Object.entries(zip_contents.files).map(entry => {
         const file = entry[1];
         const filename_parts = file.name.split("/");
         return {
             name: filename_parts[filename_parts.length - 1],
-            size: file._data.uncompressedSize,
+            size: file['_data'].uncompressedSize,
             file: file,
             text: async function () {
                 return await this.file.async("string");
             }
         };
-    }));
+    });
 }
 
-export async function loadFiles(fileList) {
-    let files = Array.from(fileList);
+export interface GerberFileHandle{
+    name: string,
+    text: ()=>Promise<string>
+}
+
+export type GerberFile=Pick<InputLayer,"filename"|"gerber">&{fileId: number}
+
+
+export async function loadFiles(files: GerberFileHandle[]): Promise<GerberFile[]> {
 
     return await Promise.all(files.map(async (file, i) => {
         const text = await file.text();
@@ -34,7 +44,7 @@ export async function loadFiles(fileList) {
     }));
 }
 
-export async function renderPCB(files, checkList) {
+export async function renderPCB(files: GerberFile[], checkList):Promise<Stackup|null> {
     if (files) {
         let rendered_layers = files.filter((_, idx) => checkList[idx]);
 
@@ -42,14 +52,14 @@ export async function renderPCB(files, checkList) {
             const options = {color: {fr4: '#916b55'}};
             return await renderStackup(rendered_layers, options);
         } else {
-            return [null, null];
+            return null;
         }
     } else {
-        return [null, null];
+        return null;
     }
 }
 
-export async function renderPhotonFiles(layersToExport, export_options) {
+export async function renderPhotonFiles(layersToExport:(StackupLayer&{displayOrder: number, inverted: boolean})[], export_options: ExportOptions) {
     return await renderPhoton(layersToExport, export_options);
 }
 
@@ -61,8 +71,10 @@ export async function downloadFile(filesToDownload) {
     await downloadFileFunc(filesToDownload);
 }
 
-export function modifyRawSVG(layer, invert, drill, drillLayerSVGs) {
-    const layerSVG = SVGJS(layer.svg);
+export function modifyRawSVG(layer: StackupLayer, invert: boolean, drill: boolean, drillLayerSVGs:(gerberToSvg.Converter<string>|string)[]) {
+    const layerSVG: Svg = SVG(layer.svg) as Svg;
+    // layerSVG.svg(layer.svg,  true);
+   
     const viewbox = layerSVG.viewbox();
     if (drill) {
         const originalG = layerSVG.find('g').filter((g) => g.parent() === layerSVG.root())[0];
@@ -72,7 +84,7 @@ export function modifyRawSVG(layer, invert, drill, drillLayerSVGs) {
         const drillMask = layerSVG.mask().add(maskBG);
 
         drillLayerSVGs.forEach((singleDrillSVG) => {
-            const drillSVG = SVGJS(singleDrillSVG);
+            const drillSVG = SVG(singleDrillSVG);
 
             // Import defs from the drill file to the current layer
             const drillDefs = drillSVG.find('defs')[0].children();
@@ -95,11 +107,11 @@ export function modifyRawSVG(layer, invert, drill, drillLayerSVGs) {
     }
 
     const newLayer = {...layer};
-    newLayer['svg'] = layerSVG.svg();
+    newLayer.svg = layerSVG.svg();
     return newLayer;
 }
 
-export function addDisplayOrderField(layerList){
+export function addDisplayOrderField<T extends StackupLayer>(layerList: T[]): (T&{displayOrder: number})[]{
     const type_order = ["drill", "outline", "silkscreen", "soldermask",  "copper"];
 
     const sortedList = [...layerList].sort((layerA, layerB) => {
@@ -110,8 +122,8 @@ export function addDisplayOrderField(layerList){
     return sortedList.map((layer, i) => {return {...layer, displayOrder: i}})
 }
 
-export function renderAllLayers(layerList, invertedList, drilledList, drillLayerSVGs){
-    const newLayerList = Array(layerList.length).fill(null);
+export function renderAllLayers(layerList: StackupLayer[], invertedList: boolean[], drilledList:boolean[], drillLayerSVGs: (gerberToSvg.Converter<string>|string)[]){
+    const newLayerList: StackupLayer[] = Array(layerList.length).fill(null);
     layerList.filter((layer) => layer != null)
         .map((layer) => modifyRawSVG(layer, invertedList[layer.id], drilledList[layer.id], drillLayerSVGs))
         .forEach((layer) => newLayerList[layer.id] = layer);

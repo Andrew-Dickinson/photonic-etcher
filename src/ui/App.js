@@ -1,6 +1,6 @@
 import './App.css';
 import React from "react";
-import MainInterface from "./mainInterface";
+import MainInterface from "./mainInterface.tsx";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {

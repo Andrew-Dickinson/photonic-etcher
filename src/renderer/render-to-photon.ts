@@ -1,11 +1,16 @@
-const {XMLParser} = require('fast-xml-parser');
+import { XMLParser } from "fast-xml-parser";
+import { ExportOptions, PhotonFile } from "./pcbAPI";
+import { StackupLayer } from "./stackup-renderer";
+import { Svg } from "@svgdotjs/svg.js";
+
+// const {XMLParser} = require('fast-xml-parser');
 const {SVG} = require('@svgdotjs/svg.js');
 
 const {buildPhotonFile} = require("./build-photon-file");
 const {SVGToImage} = require("./svg_to_png");
 const {CanvasToImage} = require("./canvas_to_img");
 
- export default async function renderToPhoton(layers, options){
+ export default async function renderToPhoton(layers:(StackupLayer&{displayOrder: number, inverted: boolean})[], options: ExportOptions): Promise<PhotonFile[]>{
     const outputResolution = options.printerSettings.resolution; // px * px
     const xyRes = options.printerSettings.xyRes; // mm
 
@@ -26,7 +31,7 @@ const {CanvasToImage} = require("./canvas_to_img");
 
     const parser = new XMLParser(xmlOptions);
 
-    const output = [];
+    const output: PhotonFile[] = [];
     const fileNameCounts = {};
 
     for (const layer of layers) {
@@ -67,7 +72,7 @@ const {CanvasToImage} = require("./canvas_to_img");
         const translateStr = "translate(" + translateX + ", " + translateY + ") ";
         const scaleStr     = "scale(" + scaleX + ", " + scaleY + ")";
 
-        const originalSVG = SVG(layer.svg);
+        const originalSVG = SVG(layer.svg) as Svg;
         originalSVG.attr('shape-rendering', "crispEdges");
         const elements = originalSVG.children();
         const new_parent_group = originalSVG.group();
@@ -106,7 +111,7 @@ const {CanvasToImage} = require("./canvas_to_img");
         const previewImg = await SVGToImage(previewConverterOptions);
 
         let previewCanvas = document.createElement('canvas');
-        let previewContext = previewCanvas.getContext("2d");
+        let previewContext = previewCanvas.getContext("2d")!;
         previewCanvas.width = options.printerSettings.previewResolution[0];
         previewCanvas.height = options.printerSettings.previewResolution[1];
 
@@ -117,7 +122,7 @@ const {CanvasToImage} = require("./canvas_to_img");
         const canvas = document.createElement('canvas');
         canvas.width = outputResolution[0];
         canvas.height = outputResolution[1];
-        const ctx = canvas.getContext("2d");
+        const ctx = canvas.getContext("2d")!;
 
         ctx.fillStyle = layer.inverted ? "black" : "white";
         ctx.fillRect(0, 0, outputResolution[0], outputResolution[1]);
@@ -187,7 +192,7 @@ const {CanvasToImage} = require("./canvas_to_img");
 
         const originalCanvasImg = await CanvasToImage(canvas);
 
-        const previewCTX = rotatedCanvas.getContext("2d");
+        const previewCTX = rotatedCanvas.getContext("2d")!;
 
         if (options.printerSettings.rotate180 && outputResolution[0] < outputResolution[1]) {
             previewCTX.translate(outputResolution[1]/2,outputResolution[0]/2);
