@@ -1,10 +1,10 @@
 
 export function CanvasToImage(canvas){
-    return new Promise(function(resolve, reject){
+    return new Promise<CanvasImageSource>(function(resolve, reject){
         const image = new Image();
 
         image.onload = function(){
-            resolve(this)
+            resolve(this as CanvasImageSource)
         };
 
         image.src = canvas.toDataURL();
