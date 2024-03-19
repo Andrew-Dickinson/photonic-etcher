@@ -36,8 +36,21 @@ const {CanvasToImage} = require("./canvas_to_img");
 
     for (const layer of layers) {
         const svgXMLObj = parser.parse(layer.svg);
-        const board_width_mm = parseFloat(svgXMLObj.svg['@_width'].replace("mm", ""));
-        const board_height_mm = parseFloat(svgXMLObj.svg['@_height'].replace("mm", ""));
+        var board_width_mm;
+        var board_height_mm;
+        console.log(svgXMLObj.svg['@_height']);
+        if(svgXMLObj.svg['@_width'].endsWith('in'))
+        {
+            board_width_mm = parseFloat(svgXMLObj.svg['@_width'].replace("in", ""))*25.4;
+            board_height_mm = parseFloat(svgXMLObj.svg['@_height'].replace("in", ""))*25.4;
+        }
+        else
+        {
+            board_width_mm = parseFloat(svgXMLObj.svg['@_width'].replace("mm", ""));
+            board_height_mm = parseFloat(svgXMLObj.svg['@_height'].replace("mm", ""));
+        }
+        console.log(board_height_mm);
+
         const viewbox = svgXMLObj.svg['@_viewBox'].split(' ').map((str) => parseInt(str));
         const exposureTime = options.exposureTimes[layer.id];
         let outputFileName = ""
