@@ -1,7 +1,10 @@
+import { PrinterModel } from "../ui/export_dialog";
+import { BuildOutputFileArgs } from "./render-to-photon";
+
 const RLE_MAX_RUN = 0x7f;
 const RLE4_MAX_RUN = 0xfff;
 
-function scanForRun(imageDataArray, start, maxRun){
+function scanForRun(imageDataArray, start, maxRun) {
     let run_len = 1;
     for (; run_len < maxRun; run_len++) {
         if (start + run_len >= imageDataArray.length) {
@@ -22,7 +25,7 @@ function scanForRun(imageDataArray, start, maxRun){
 function encodeRLE4(greyScaleImageData) {
     const output: number[] = [];
 
-    for (let i = 0; i < greyScaleImageData.length; ){
+    for (let i = 0; i < greyScaleImageData.length;) {
         const run_len = scanForRun(greyScaleImageData, i, RLE4_MAX_RUN);
 
         // This combined with the logic in scanForRun treats any non-255 pixels as black, essentially removing
@@ -38,11 +41,11 @@ function encodeRLE4(greyScaleImageData) {
     return new Uint8Array(output);
 }
 
-function encodeRLE(greyScaleImageData) {
+export function encodeRLE(greyScaleImageData, maxRun = RLE_MAX_RUN) {
     const output: number[] = [];
 
-    for (let i = 0; i < greyScaleImageData.length; ){
-        const run_len = scanForRun(greyScaleImageData, i, RLE_MAX_RUN);
+    for (let i = 0; i < greyScaleImageData.length;) {
+        const run_len = scanForRun(greyScaleImageData, i, maxRun);
 
         // This combined with the logic in scanForRun treats any non-255 pixels as black, essentially removing
         // any anti-aliasing because it's complex to encode & we don't need it for PCBs
@@ -55,7 +58,7 @@ function encodeRLE(greyScaleImageData) {
     return new Uint8Array(output);
 }
 
-function writePhotonHeaders(output, headerAddr, previewAddr, layerdefAddr, layerdataAddr, fileVersion, pixelSizemm, exposureTime, resolution) {
+function writePhotonHeaders(output: DataView, headerAddr: number, previewAddr: number, layerdefAddr: number, layerdataAddr: number, fileVersion: number[], pixelSizemm: number, exposureTime: number, resolution: [number, number]) {
     // File Header
     output.setUint32(0x00, 1129926209, true); //"ANYCUBIC"
     output.setUint32(0x04, 1128874581, true); //"ANYCUBIC" (cont.)
@@ -121,14 +124,14 @@ function writePhotonHeaders(output, headerAddr, previewAddr, layerdefAddr, layer
 }
 
 
-export async function buildPhotonFile(layerData, previewData, exposureTime, printerSettings){
+export async function buildPhotonFile({ layerData, exposureTime, previewData, printerSettings }: BuildOutputFileArgs) {
     const greyScaleImageData = new Uint8Array(layerData.length / 4);
     console.assert(layerData.length / 4 === printerSettings.resolution[0] * printerSettings.resolution[1]);
-    for (let i = 0; i < layerData.length / 4; ++i){
-        greyScaleImageData[i] = layerData[i*4];
+    for (let i = 0; i < layerData.length / 4; ++i) {
+        greyScaleImageData[i] = layerData[i * 4];
     }
 
-    let layerDataBlob: Uint8Array|null = null;
+    let layerDataBlob: Uint8Array | null = null;
     if (printerSettings.encoding === "RLE4") {
         layerDataBlob = encodeRLE4(greyScaleImageData);
     } else if (printerSettings.encoding === "RLE") {
@@ -173,9 +176,9 @@ export async function buildPhotonFile(layerData, previewData, exposureTime, prin
 
     // Write preview image
     console.assert(previewData.length / 4 === previewPixels);
-    for (let i = 0; i < previewData.length / 4; ++i){
+    for (let i = 0; i < previewData.length / 4; ++i) {
         let rgb_565_encoded_pixel = 0;
-        rgb_565_encoded_pixel = rgb_565_encoded_pixel | ((previewData[i*4 + 1] >> 2) << 5)   // Green
+        rgb_565_encoded_pixel = rgb_565_encoded_pixel | ((previewData[i * 4 + 1] >> 2) << 5)   // Green
 
         // For some reason, enabling the two other color channels causes horrible distortions.
         // So thumbnails are green :)
@@ -185,7 +188,7 @@ export async function buildPhotonFile(layerData, previewData, exposureTime, prin
     }
 
     // Write post-preview static bytes (if applicable)
-    if (printerSettings.fileVersion[0] !== 1){
+    if (printerSettings.fileVersion[0] !== 1) {
         output.setUint32(PREVIEW_ADDR + 28 + (previewPixels * 2), 0, true);
         output.setUint32(PREVIEW_ADDR + 28 + (previewPixels * 2) + 4, 16, true);
         output.setUint32(PREVIEW_ADDR + 28 + (previewPixels * 2) + 8, 0xFFFFFFFF, true);
@@ -213,7 +216,7 @@ export async function buildPhotonFile(layerData, previewData, exposureTime, prin
     output.setUint32(LAYERDEF_ADDR + 20 + 28, 0, true) // Padding?
 
 
-    if (printerSettings.fileVersion[0] === 516){
+    if (printerSettings.fileVersion[0] === 516) {
         // EXTRA Layer
         const EXTRA_ADDR = LAYERDEF_ADDR + 20 + 32;
         output.setUint32(EXTRA_ADDR, 1381259333, true); //"EXTRA"
@@ -244,12 +247,12 @@ export async function buildPhotonFile(layerData, previewData, exposureTime, prin
 
         const enc = new TextEncoder();
         const printer_name = enc.encode(printerSettings.printerModel);
-        for (let i = 0; i < printer_name.length; ++i){
+        for (let i = 0; i < printer_name.length; ++i) {
             output.setUint8(MACHINE_ADDR + 16 + i, printer_name[i]);
         }
 
         const file_format = enc.encode("pw0Img");
-        for (let i = 0; i < file_format.length; ++i){
+        for (let i = 0; i < file_format.length; ++i) {
             output.setUint8(MACHINE_ADDR + 112 + i, file_format[i]);
         }
 
@@ -260,7 +263,7 @@ export async function buildPhotonFile(layerData, previewData, exposureTime, prin
         output.setUint32(MACHINE_ADDR + 136 + 16, 6506241, true); // unknown
     }
 
-    for (let i = 0; i < layerDataBlob.length; ++i){
+    for (let i = 0; i < layerDataBlob.length; ++i) {
         output.setUint8(LAYERDATA_ADDR + i, layerDataBlob[i]);
     }
 
