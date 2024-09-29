@@ -92,6 +92,15 @@ const printerModels: { [key: string]: PrinterModel } = {
         "encoding": "RLE4",
         "fileFormat": "pwmo"
     },
+    'AnyCubic Photon Mono 2 (.pm3n)': {
+        "fileVersion": [516, 8],
+        "xyRes": 0.034,
+        "resolution": [2560, 4096],
+        "previewResolution": [224, 168],
+        "rotate180": true,
+        "encoding": "RLE4",
+        "fileFormat": "pm3"
+    },
     'AnyCubic Photon Mono SE (.pwms)': {
         "fileVersion": [1, 4],
         "xyRes": 0.051,
