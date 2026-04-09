@@ -27,6 +27,7 @@ yarn-error.log*
 
 # Developer tools' files
 .lite_workspace.lua
+.idea/
 
 
 # Neutralinojs binaries and builds

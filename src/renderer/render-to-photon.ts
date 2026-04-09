@@ -12,7 +12,8 @@ const {CanvasToImage} = require("./canvas_to_img");
 
  export default async function renderToPhoton(layers:(StackupLayer&{displayOrder: number, inverted: boolean})[], options: ExportOptions): Promise<PhotonFile[]>{
     const outputResolution = options.printerSettings.resolution; // px * px
-    const xyRes = options.printerSettings.xyRes; // mm
+    const xRes = options.printerSettings.xRes; // mm per pixel in X
+    const yRes = options.printerSettings.yRes; // mm per pixel in Y
 
     const outputWidth = Math.max(outputResolution[0], outputResolution[1]);
     const outputHeight = Math.min(outputResolution[0], outputResolution[1]);
@@ -22,7 +23,7 @@ const {CanvasToImage} = require("./canvas_to_img");
     const flipBottomLayersHorizontal = options.flipBools[2];
     const flipBottomLayersVertical = options.flipBools[3];
 
-    // const buildPlateSize = outputResolution.map(i => i * xyRes); // mm * mm
+    // const buildPlateSize = outputResolution.map(i => i * xRes); // mm * mm
 
     const xmlOptions = {
         ignoreAttributes: false,
@@ -96,8 +97,8 @@ const {CanvasToImage} = require("./canvas_to_img");
         ///////////////////////////////// END HANDLE FLIP BOOLS ////////////////////////////////////////////////
 
         //////////////////// RENDER SVG INTO RASTERIZED PNG /////////////////////////
-        const board_width_px = Math.round(board_width_mm / xyRes);
-        const board_height_px = Math.round(board_height_mm / xyRes);
+        const board_width_px = Math.round(board_width_mm / xRes);
+        const board_height_px = Math.round(board_height_mm / yRes);
 
         const layerImg = await SVGToImage({
             svg: finalSVG,
@@ -130,6 +131,31 @@ const {CanvasToImage} = require("./canvas_to_img");
 
         //////////////////// END RENDER SVG INTO RASTERIZED PNG (Preview) /////////////////////////
 
+        //////////////////// RENDER SVG INTO RASTERIZED PNG (Preview2 - v518 only) /////////////////////////
+        let rawPreview2Data: ImageData | null = null;
+        if (options.printerSettings.preview2Resolution) {
+            const preview2SVG = SVG(finalSVG);
+            preview2SVG.attr('shape-rendering', "geometricPrecision");
+            const preview2Img = await SVGToImage({
+                svg: preview2SVG.svg(),
+                outputFormat: "img",
+                width: options.printerSettings.preview2Resolution[0],
+                height: options.printerSettings.preview2Resolution[1]
+            });
+
+            let preview2Canvas = document.createElement('canvas');
+            let preview2Context = preview2Canvas.getContext("2d")!;
+            preview2Canvas.width = options.printerSettings.preview2Resolution[0];
+            preview2Canvas.height = options.printerSettings.preview2Resolution[1];
+            preview2Context.drawImage(preview2Img, 0, 0);
+            rawPreview2Data = preview2Context.getImageData(
+                0, 0,
+                options.printerSettings.preview2Resolution[0],
+                options.printerSettings.preview2Resolution[1]
+            );
+        }
+        //////////////////// END RENDER SVG INTO RASTERIZED PNG (Preview2 - v518 only) /////////////////////////
+
         const canvas = document.createElement('canvas');
         canvas.width = outputResolution[0];
         canvas.height = outputResolution[1];
@@ -139,8 +165,8 @@ const {CanvasToImage} = require("./canvas_to_img");
         ctx.fillRect(0, 0, outputResolution[0], outputResolution[1]);
 
         //////////////////////////////// DRAW BOARD IN CORRECT LOCATION ON CANVAS ////////////////////////
-        const x_offset_px = Math.round(options.anchorOffset[0] / xyRes);
-        const y_offset_px = Math.round(options.anchorOffset[1] / xyRes);
+        const x_offset_px = Math.round(options.anchorOffset[0] / xRes);
+        const y_offset_px = Math.round(options.anchorOffset[1] / yRes);
 
         const cornerToCoords = {
             "TL": [x_offset_px, y_offset_px],
@@ -185,7 +211,8 @@ const {CanvasToImage} = require("./canvas_to_img");
             rawLayerIMGData.data,
             rawPreviewData.data,
             exposureTime,
-            options.printerSettings
+            options.printerSettings,
+            rawPreview2Data ? rawPreview2Data.data : null
         );
         ///// END Generate PWMS file /////
 

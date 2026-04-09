@@ -7,18 +7,21 @@ import { StackupLayer } from "../renderer/stackup-renderer";
 
 export interface PrinterModel {
     fileVersion: [number, number],
-    xyRes: number,
+    xRes: number,  // mm per pixel in X direction
+    yRes: number,  // mm per pixel in Y direction
     resolution: [number, number],
     physicalDimensions?: [number, number, number],
     previewResolution: [number, number],
+    preview2Resolution?: [number, number],
     rotate180: boolean,
     encoding: "RLE" | "RLE4",
-    fileFormat: "dlp" | "pm3" | "pm3m" | "pmsq" | "pw0" | "pwma" | "pwmb" | "pwmo" | "pwms" | "pwmx" | "pws" | "photon" | "pwx"
+    fileFormat: "dlp" | "pm3" | "pm3m" | "pmsq" | "pw0" | "pwma" | "pwmb" | "pwmo" | "pwms" | "pwmx" | "pws" | "photon" | "pwx" | "pm5s"
 }
 const printerModels: { [key: string]: PrinterModel } = {
     'AnyCubic Photon Ultra (.dlp)': {
         "fileVersion": [515, 5],
-        "xyRes": 0.080,
+        "xRes": 0.080,
+        "yRes": 0.080,
         "resolution": [1280, 720],
         "previewResolution": [224, 168],
         "rotate180": true,
@@ -27,7 +30,8 @@ const printerModels: { [key: string]: PrinterModel } = {
     },
     'AnyCubic Photon M3 (.pm3)': {
         "fileVersion": [516, 8],
-        "xyRes": 0.040,
+        "xRes": 0.040,
+        "yRes": 0.040,
         "resolution": [4096, 2560],
         "physicalDimensions": [163.92, 102.4, 180.0],
         "previewResolution": [224, 168],
@@ -37,7 +41,8 @@ const printerModels: { [key: string]: PrinterModel } = {
     },
     'AnyCubic Photon M3 Max (.pm3m)': {
         "fileVersion": [516, 8],
-        "xyRes": 0.046,
+        "xRes": 0.046,
+        "yRes": 0.046,
         "resolution": [6480, 3600],
         "physicalDimensions": [298.08, 165.6, 300.0],
         "previewResolution": [224, 168],
@@ -47,7 +52,8 @@ const printerModels: { [key: string]: PrinterModel } = {
     },
     'AnyCubic Photon Mono SQ (.pwsq)': {
         "fileVersion": [515, 5],
-        "xyRes": 0.050,
+        "xRes": 0.050,
+        "yRes": 0.050,
         "resolution": [2400, 2560],
         "previewResolution": [224, 168],
         "rotate180": false,
@@ -56,7 +62,8 @@ const printerModels: { [key: string]: PrinterModel } = {
     },
     'AnyCubic Photon Zero (.pw0)': {
         "fileVersion": [1, 4],
-        "xyRes": 0.1155,
+        "xRes": 0.1155,
+        "yRes": 0.1155,
         "resolution": [480, 854],
         "previewResolution": [224, 168],
         "rotate180": false,
@@ -65,7 +72,8 @@ const printerModels: { [key: string]: PrinterModel } = {
     },
     'AnyCubic Photon Mono 4K (.pwma)': {
         "fileVersion": [516, 8],
-        "xyRes": 0.035,
+        "xRes": 0.035,
+        "yRes": 0.035,
         "resolution": [3840, 2400],
         "physicalDimensions": [134.4, 84.0, 165.0],
         "previewResolution": [224, 168],
@@ -75,7 +83,8 @@ const printerModels: { [key: string]: PrinterModel } = {
     },
     'AnyCubic Photon Mono X 6K & Photon M3 Plus (.pwmb)': {
         "fileVersion": [516, 8],
-        "xyRes": 0.0344,
+        "xRes": 0.0344,
+        "yRes": 0.0344,
         "resolution": [5760, 3600],
         "physicalDimensions": [197.0, 122.8, 245.0],
         "previewResolution": [224, 168],
@@ -85,7 +94,8 @@ const printerModels: { [key: string]: PrinterModel } = {
     },
     'AnyCubic Photon Mono (.pwmo)': {
         "fileVersion": [1, 4],
-        "xyRes": 0.051,
+        "xRes": 0.051,
+        "yRes": 0.051,
         "resolution": [1620, 2560],
         "previewResolution": [224, 168],
         "rotate180": false,
@@ -94,7 +104,8 @@ const printerModels: { [key: string]: PrinterModel } = {
     },
     'AnyCubic Photon Mono SE (.pwms)': {
         "fileVersion": [1, 4],
-        "xyRes": 0.051,
+        "xRes": 0.051,
+        "yRes": 0.051,
         "resolution": [1620, 2560],
         "previewResolution": [224, 168],
         "rotate180": false,
@@ -103,7 +114,8 @@ const printerModels: { [key: string]: PrinterModel } = {
     },
     'AnyCubic Photon Mono X (.pwmx)': {
         "fileVersion": [1, 4],
-        "xyRes": 0.050,
+        "xRes": 0.050,
+        "yRes": 0.050,
         "resolution": [3840, 2400],
         "previewResolution": [224, 168],
         "rotate180": false,
@@ -112,7 +124,8 @@ const printerModels: { [key: string]: PrinterModel } = {
     },
     'AnyCubic Photon & Photon S (.pws)': {
         "fileVersion": [1, 4],
-        "xyRes": 0.047,
+        "xRes": 0.047,
+        "yRes": 0.047,
         "resolution": [1440, 2560],
         "previewResolution": [224, 168],
         "rotate180": true,
@@ -121,12 +134,25 @@ const printerModels: { [key: string]: PrinterModel } = {
     },
     'AnyCubic Photon X (.pwx)': {
         "fileVersion": [1, 4],
-        "xyRes": 0.075,
+        "xRes": 0.075,
+        "yRes": 0.075,
         "resolution": [2560, 1600],
         "previewResolution": [224, 168],
         "rotate180": true,
         "encoding": "RLE4",
         "fileFormat": "pwx"
+    },
+    'AnyCubic Photon Mono M5s (.pm5s)': {
+        "fileVersion": [518, 11],
+        "xRes": 0.019,
+        "yRes": 0.024,
+        "resolution": [11520, 5120],
+        "physicalDimensions": [218.88, 122.88, 200.0],
+        "previewResolution": [224, 168],
+        "preview2Resolution": [320, 190],
+        "rotate180": true,
+        "encoding": "RLE4",
+        "fileFormat": "pm5s"
     },
 }
 
