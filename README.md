@@ -31,6 +31,7 @@ Photonic Etcher is a browser-based tool for converting gerber files into "printa
  - AnyCubic Photon Mono (.pwmo)
  - AnyCubic Photon Mono SE (.pwms)
  - AnyCubic Photon Mono X (.pwmx)
+ - AnyCubic Photon Mono X2 (.pmx2)
  - AnyCubic Photon & Photon S (.pws)
  - AnyCubic Photon X (.pwx)
 

@@ -13,7 +13,7 @@ export interface PrinterModel {
     previewResolution: [number, number],
     rotate180: boolean,
     encoding: "RLE" | "RLE4",
-    fileFormat: "dlp" | "pm3" | "pm3m" | "pmsq" | "pw0" | "pwma" | "pwmb" | "pwmo" | "pwms" | "pwmx" | "pws" | "photon" | "pwx"
+    fileFormat: "dlp" | "pm3" | "pm3m" | "pmsq" | "pw0" | "pwma" | "pwmb" | "pwmo" | "pwms" | "pwmx" | "pmx2" | "pws" | "photon" | "pwx"
 }
 const printerModels: { [key: string]: PrinterModel } = {
     'AnyCubic Photon Ultra (.dlp)': {
@@ -109,6 +109,15 @@ const printerModels: { [key: string]: PrinterModel } = {
         "rotate180": false,
         "encoding": "RLE4",
         "fileFormat": "pwmx"
+    },
+    'AnyCubic Photon Mono X2 (.pmx2)': {
+        "fileVersion": [1, 4],
+        "xyRes": 0.048,
+        "resolution": [4096, 2560],
+        "previewResolution": [224, 168],
+        "rotate180": false,
+        "encoding": "RLE4",
+        "fileFormat": "pmx2"
     },
     'AnyCubic Photon & Photon S (.pws)': {
         "fileVersion": [1, 4],
